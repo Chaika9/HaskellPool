@@ -1,28 +1,29 @@
+import Data.Char (isDigit)
+
 -- Task 01
 myElem :: Eq a => a -> [a] -> Bool
-myElem val [] = False
+myElem _ [] = False
 myElem val (a:ab)
     | val == a = True
     | otherwise = myElem val ab
 
 -- Task 02
 safeDiv :: Int -> Int -> Maybe Int
-safeDiv a 0 = Nothing
+safeDiv _ 0 = Nothing
 safeDiv a b = Just (div a b)
 
 -- Task 03
 safeNth :: [a] -> Int -> Maybe a
-safeNth [] i = Nothing
-safeNth (a:ap) 0 = Just a
+safeNth [] _ = Nothing
+safeNth (a:_) 0 = Just a
 safeNth (a:ap) i
     | i < 0 = Nothing
-    | i > length (a:ap) = Nothing
     | otherwise = safeNth ap (i - 1)
 
 -- Task 04
 safeSucc :: Maybe Int -> Maybe Int
-safeSucc Nothing  = Nothing
-safeSucc val = fmap succ val
+safeSucc Just val = Just $ succ val
+safeSucc _ = Nothing
 
 -- Task 05
 myLookup :: Eq a => a -> [(a , b)] -> Maybe b
@@ -33,28 +34,26 @@ myLookup val (a:ab)
 
 -- Task 06
 maybeDo :: (a -> b -> c) -> Maybe a -> Maybe b -> Maybe c
-maybeDo func Nothing _ = Nothing
-maybeDo func _ Nothing = Nothing
-maybeDo func a b = Just func <*> a <*> b
+maybeDo func (Just a) (Just b) = Just $ func a b
+maybeDo _ _ _ = Nothing
 
 -- Task 07
 readInt :: [Char] -> Maybe Int
 readInt [] = Nothing
-readInt a
-    | all myIsDigit a = Just (read a :: Int)
+readInt ('-':xs:xss)
+    | all isDigit (xs:xss) = Just (read (xs:xss))
     | otherwise = Nothing
-
-myIsDigit :: Char -> Bool
-myIsDigit val = myElem val "-0123456789"
+readInt a
+    | all isDigit a = Just (read a :: Int)
+    | otherwise = Nothing
 
 -- Task 08
 getLineLength :: IO Int
-getLineLength = fmap length getLine
+getLineLength = length <$> getLine
 
 -- Task 09
 printAndGetLength :: String -> IO Int
-printAndGetLength str = putStrLn str >>
-    return (length str)
+printAndGetLength str = putStrLn str >> (return $ length str)
 
 -- Task 10
 printBox :: Int -> IO ()
